@@ -40,6 +40,10 @@ class TestMotionUpdate(unittest.TestCase):
 class TestKalmanFilter(unittest.TestCase):
 
     def test_kalman_1d(self):
+        """Simple 1D Gaussian Random Variable Point Estimator
+
+        Kalman Filter estimates mu, sigma
+        """
         measurements = [5., 6., 7., 9., 10.]
         motions = [1., 1., 2., 1., 1.]
         measurement_sig = 4.
@@ -56,7 +60,7 @@ class TestKalmanFilter(unittest.TestCase):
 
     def test_kalman_2d(self):
 
-        measurements = [1, 2, 3]
+        measurements = [1., 2., 3.]
         # initial state (location and velocity)
         x = matrix([[0.], [0.]])
         # initial uncertainty
@@ -79,6 +83,38 @@ class TestKalmanFilter(unittest.TestCase):
         self.assertEqual(x.value, x_expected)
         self.assertEqual(P.value, P_expected)
 
+    def test_kalman_4d(self):
+        initial_xy = [4., 12.]
+        measurements = [[5., 10.],
+                        [6., 8.],
+                        [7., 6.],
+                        [8., 4],
+                        [9., 2],
+                        [10., 0.]]
+
+        # s.v. representation
+        # [x, y, x_dot, y_dot]^T
+        x_init = matrix([[initial_xy[0]],
+                         [initial_xy[1]],
+                         [0.],
+                         [0.]])
+        dt = 0.1
+        u = matrix([[0.], [0.], [0.], [0.]])
+        P = matrix([[0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 1000.0, 0.0],
+                    [0.0, 0.0, 0.0, 1000.0]])
+        F = matrix([[1.0, 0.0, dt, 0.0],
+                    [0.0, 1.0, 0.0, dt],
+                    [0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 1.0]])
+        H = matrix([[1.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 0.0, 0.0]])
+        R = matrix([[0.1, 0.0],
+                    [0.0, 0.1]])
+        x, P = simulate_kalman_filter_matrix(
+            x_init, P, measurements, u, F=F, H=H, R=R)
+        print x, P
 
 if __name__ == '__main__':
     unittest.main()

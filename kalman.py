@@ -1,5 +1,5 @@
 import math
-from course_provided_functions import matrix
+from course_provided_functions_02 import matrix
 
 
 def gaussian(mu, sigma2, x):
@@ -46,17 +46,20 @@ def simulate(measurements, motions, measurement_sig, motion_sig, mu, sig):
 
 
 # Implement the filter function below
-def matrix_measure(x, z, P, H, R):
-    y = matrix([[z]])-H*x
+def matrix_measure(x, Z, P, H, R):
+
+    y = Z.transpose()-H*x
     S = H*P*H.transpose() + R
     K = P*H.transpose()*S.inverse()
     x_hat = x + K*y
-    I = matrix([[1., 0.], [0., 1.]])
+    I = matrix([[]])
+    I.identity(K.dimx)
     P_hat = (I - K*H)*P
     return [x_hat, P_hat]
 
 
 def matrix_predict(x, P, F, u):
+
     x_hat = F*x + u
     P_hat = F*P*F.transpose()
     return [x_hat, P_hat]
@@ -67,8 +70,12 @@ def simulate_kalman_filter_matrix(
     """Simulate a Kalman filter
 
     State Variables:
+    2x2 case
       x = [x, x_dot] (initial state)
       P = COV(x, x_dot)
+    4x4 case
+      x = [x, y, x_dot, y_dot]
+      P = COV(x, y, x_dot, y_dot)
     Measurement at time step $i$:
       Z_i = measurements[i]
     External Movement:
@@ -76,10 +83,15 @@ def simulate_kalman_filter_matrix(
 
     Returns:
       [ x_i^hat, x_i_dot^hat ]
+    or
+      [ x_i^hat, y_i^hat, x_i_dot^hat, y_i_dot^hat ]
     """
-    # Set defaults for the Kalman Filter
+    # Set 2x2 defaults for the Kalman Filter
     # next state function
     if F is None:
+        # F is a matrix:
+        #      [[x, delta_t],
+        #       [0, x_dot  ]]
         F = matrix([[1., 1.], [0, 1.]])
     # measurement function
     if H is None:
@@ -88,10 +100,14 @@ def simulate_kalman_filter_matrix(
     if R is None:
         R = matrix([[1.]])
 
-    u = matrix([[0.], [0.]])
     for i in range(len(measurements)):
+        # Format the measurement correctly for the K.F.
+        if isinstance(measurements[i], list):
+            Z = matrix([measurements[i]])
+        else:
+            Z = matrix([[measurements[i]]])
         # measurement update
-        x, P = matrix_measure(x, measurements[i], P, H, R)
+        x, P = matrix_measure(x, Z, P, H, R)
         # prediction
         x, P = matrix_predict(x, P, F, u)
 
