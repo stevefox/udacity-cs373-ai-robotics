@@ -1,4 +1,4 @@
-from course_provided_functions_03 import robot, thrun_resample
+from course_provided_functions_03 import robot, thrun_resample, eval
 import random
 
 
@@ -66,10 +66,11 @@ def simulate_filter(size, motions):
         Z = myrobot.sense()
         weights = sense(particles, Z)
         resampled = thrun_resample(particles, weights)
-    return particles
+    return myrobot, particles
 
 
 if __name__ == '__main__':
     motions = [[0.1, 5.0], [0.1, 5.0]]
-    print simulate_filter(1000, motions)
+    myrobot, p = simulate_filter(1000, motions)
+    print eval(myrobot, p)
     
