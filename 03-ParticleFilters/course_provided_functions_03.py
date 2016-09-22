@@ -105,4 +105,19 @@ def eval(r, p):
     return sum / float(len(p))
 
 
-
+def thrun_resample(particles, weights, count=None):
+    if count is None:
+        N = len(particles)
+    else:
+        N = count
+    sample_set = []
+    index = int(random.random()*N)
+    beta = 0.0
+    max_weight = max(weights)
+    for i in range(N):
+        beta += random.random() * 2.0 * max_weight
+        while beta > weights[index]:
+            beta -= weights[index]
+            index = (index + 1) % N
+        sample_set.append(particles[index])
+    return sample_set
