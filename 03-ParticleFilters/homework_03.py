@@ -79,7 +79,7 @@ class robot:
         # Apply noise
         steering = motion[0] + random.gauss(0.0, self.steering_noise)
         distance = motion[1] + random.gauss(0.0, self.distance_noise)
-        
+
         turning_angle = distance/self.length*tan(steering)
 
         if abs(turning_angle) > TURNING_ANGLE_THRESHOLD:
@@ -103,10 +103,17 @@ class robot:
         # of the robot class with the correct coordinates.
         return result
 
-    ############## ONLY ADD/MODIFY CODE ABOVE HERE ####################
+    def sense(self):
+        bearings = []
+        for i in range(len(landmarks)):
+            dy = landmarks[i][0] - self.y
+            dx = landmarks[i][1] - self.x
+            bearing = (atan2(dy, dx) - self.orientation) % (2*pi)
+            bearings.append(bearing)
+        return bearings
 
 
-class TestRobot(unittest.TestCase):
+class TestRobotMove(unittest.TestCase):
 
     def test_deterministic_move(self):
         motions = [[0.0, 10.0], [pi / 6.0, 10], [0.0, 20.0]]
@@ -164,39 +171,43 @@ class TestRobot(unittest.TestCase):
             for j, k in zip(state[i], expected_state[i]):
                 self.assertTrue(abs(j-k) < 0.001)
 
-    def test_deterministic_move2(self):
 
-        motions = [[0.2, 10.] for row in range(10)]
-        length = 20.0
+class TestRobotSense(unittest.TestCase):
+
+    def test_sense(self):
+        length = 20.
+        bearing_noise = 0.0
+        steering_noise = 0.0
+        distance_noise = 0.0
+
         myrobot = robot(length)
-        bearing_noise = 0.05
-        steering_noise = 0.05
-        distance_noise = 1.0
-        myrobot.set(0.0, 0.0, 0.0)
+        myrobot.set(30.0, 20.0, 0.0)
         myrobot.set_noise(bearing_noise, steering_noise, distance_noise)
+        bearings = myrobot.sense()
+        expected = [6.004885648174475,
+                    3.7295952571373605,
+                    1.9295669970654687,
+                    0.8519663271732721]
+        for i in range(len(bearings)):
+            self.assertTrue(abs(bearings[i]-expected[i]) < 0.001)
 
-        state = []
-        state.append([myrobot.x, myrobot.y, myrobot.orientation])
-        for i in range(len(motions)):
-            myrobot = myrobot.move(motions[i])
-            state.append([myrobot.x, myrobot.y, myrobot.orientation])
+    def test_sense2(self):
+        length = 20.
+        bearing_noise = 0.0
+        steering_noise = 0.0
+        distance_noise = 0.0
 
-        expected_state = [[0.0, 0.0, 0.0],
-                          [9.9828, 0.5063, 0.1013],
-                          [19.863, 2.0201, 0.2027],
-                          [29.539, 4.5259, 0.3040],
-                          [38.913, 7.9979, 0.4054],
-                          [47.887, 12.400, 0.5067],
-                          [56.369, 17.688, 0.6081],
-                          [64.273, 23.807, 0.7094],
-                          [71.517, 30.695, 0.8108],
-                          [78.027, 38.280, 0.9121],
-                          [83.736, 46.485, 1.0135]]
+        myrobot = robot(length)
+        myrobot.set(30.0, 20.0, pi / 5.0)
+        myrobot.set_noise(bearing_noise, steering_noise, distance_noise)
+        bearings = myrobot.sense()
+        expected = [5.376567117456516,
+                    3.101276726419402,
+                    1.3012484663475101,
+                    0.22364779645531352]
+        for i in range(len(bearings)):
+            self.assertTrue(abs(bearings[i]-expected[i]) < 0.001)
 
-        for i in range(len(expected_state)):
-            for j, k in zip(state[i], expected_state[i]):
-                self.assertTrue(abs(j-k) < 0.001)
 
-                
 if __name__ == '__main__':
     unittest.main()
