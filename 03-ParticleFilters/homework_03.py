@@ -74,23 +74,26 @@ class robot:
 
     def move(self, motion): # Do not change the name of this function
 
-        BETA_THRESHOLD = 0.001
+        TURNING_ANGLE_THRESHOLD = 0.001
 
-        # ADD CODE HERE
-        alpha = motion[0]
-        d = motion[1]
-        beta = d/self.length*tan(alpha)
+        # Apply noise
+        steering = motion[0] + random.gauss(0.0, self.steering_noise)
+        distance = motion[1] + random.gauss(0.0, self.distance_noise)
+        
+        turning_angle = distance/self.length*tan(steering)
 
-        if abs(beta) > BETA_THRESHOLD:
-            R = d/beta
+        if abs(turning_angle) > TURNING_ANGLE_THRESHOLD:
+            # Bicycle model for motion
+            R = distance/turning_angle
             cx = self.x - sin(self.orientation)*R
             cy = self.y + cos(self.orientation)*R
-            x = cx + sin(self.orientation + beta)*R
-            y = cy - cos(self.orientation + beta)*R
+            x = cx + sin(self.orientation + turning_angle)*R
+            y = cy - cos(self.orientation + turning_angle)*R
         else:
-            x = self.x + d*cos(self.orientation)
-            y = self.y + d*sin(self.orientation)
-        orientation = (self.orientation + beta) % (2*pi)
+            # Approximate by straight line motion
+            x = self.x + distance*cos(self.orientation)
+            y = self.y + distance*sin(self.orientation)
+        orientation = (self.orientation + turning_angle) % (2.0*pi)
         result = robot(self.length)
         result.set(x, y, orientation)
         result.set_noise(self.bearing_noise,
@@ -128,7 +131,6 @@ class TestRobot(unittest.TestCase):
             for j, k in zip(state[i], expected_state[i]):
                 self.assertTrue(abs(j-k) < 0.001)
 
-
     def test_deterministic_move2(self):
 
         motions = [[0.2, 10.] for row in range(10)]
@@ -162,5 +164,39 @@ class TestRobot(unittest.TestCase):
             for j, k in zip(state[i], expected_state[i]):
                 self.assertTrue(abs(j-k) < 0.001)
 
+    def test_deterministic_move2(self):
+
+        motions = [[0.2, 10.] for row in range(10)]
+        length = 20.0
+        myrobot = robot(length)
+        bearing_noise = 0.05
+        steering_noise = 0.05
+        distance_noise = 1.0
+        myrobot.set(0.0, 0.0, 0.0)
+        myrobot.set_noise(bearing_noise, steering_noise, distance_noise)
+
+        state = []
+        state.append([myrobot.x, myrobot.y, myrobot.orientation])
+        for i in range(len(motions)):
+            myrobot = myrobot.move(motions[i])
+            state.append([myrobot.x, myrobot.y, myrobot.orientation])
+
+        expected_state = [[0.0, 0.0, 0.0],
+                          [9.9828, 0.5063, 0.1013],
+                          [19.863, 2.0201, 0.2027],
+                          [29.539, 4.5259, 0.3040],
+                          [38.913, 7.9979, 0.4054],
+                          [47.887, 12.400, 0.5067],
+                          [56.369, 17.688, 0.6081],
+                          [64.273, 23.807, 0.7094],
+                          [71.517, 30.695, 0.8108],
+                          [78.027, 38.280, 0.9121],
+                          [83.736, 46.485, 1.0135]]
+
+        for i in range(len(expected_state)):
+            for j, k in zip(state[i], expected_state[i]):
+                self.assertTrue(abs(j-k) < 0.001)
+
+                
 if __name__ == '__main__':
     unittest.main()
