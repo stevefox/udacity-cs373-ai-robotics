@@ -103,12 +103,15 @@ class robot:
         # of the robot class with the correct coordinates.
         return result
 
-    def sense(self):
+    def sense(self, add_noise=True):
         bearings = []
         for i in range(len(landmarks)):
             dy = landmarks[i][0] - self.y
             dx = landmarks[i][1] - self.x
-            bearing = (atan2(dy, dx) - self.orientation) % (2*pi)
+            bearing = atan2(dy, dx) - self.orientation
+            if add_noise:
+                bearing += random.gauss(0.0, self.bearing_noise)
+            bearing %= (2*pi)
             bearings.append(bearing)
         return bearings
 
