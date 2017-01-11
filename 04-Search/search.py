@@ -1,6 +1,8 @@
-import copy
 from collections import deque
 
+# Grid format:
+#   0 = navigable
+#   1 = occupied
 grid = [[0, 0, 1, 0, 0, 0],
         [0, 0, 1, 0, 0, 0],
         [0, 0, 0, 0, 1, 0],
@@ -15,7 +17,7 @@ delta = [[-1, 0],
          [1, 0],
          [0, 1]]
 
-delta_name = ['^', '<', 'V', '>']
+delta_name = ['^', '<', 'v', '>']
 
 
 def in_grid(i, j, max_y, max_x):
@@ -25,39 +27,46 @@ def in_grid(i, j, max_y, max_x):
     return False
 
 
-def search(grid, init, goal, cost):
+def apply_move(pos, move):
+    return [pos[0] + move[0],
+            pos[1] + move[1]]
 
-    open_ = deque([[0, 0, 0],])
+
+def position_equal(pos1, pos2):
+    if pos1[0] != pos2[0] or pos1[1] != pos2[1]:
+        return False
+    else:
+        return True
+
+def search(grid, init, goal, cost=lambda x: 1):
+    """Finds an optimal path using BFS.
+
+    Parameters
+    ----------
+    grid : [[]]
+        The map. 1 indicates occupied by an obstacle, 0 otherwise.
+    init : [row(int), col(int)]
+        Row and column of initial position in grid.
+    goal : [row(int), col(int)]
+        Coordinates of goal in grid.
+    cost : callable(row, col)
+        Cost function
+
+    Returns
+    -------
+    list
+        [optimal path length (int), row (int), col (int)]
+    """
+
+    open_ = deque([[0, 0, 0], ])
     visited = []
+    expand = []
 
-    max_y = len(grid)
-    max_x = len(grid[0])
-
-    while len(open_) > 0:
-
-        active = open_.pop()
-        visited.append([active[1], active[2]])
-
-        for move in delta:
-            next_step = [active[0] + 1, active[1] + move[0], active[2] + move[1]]
-            if next_step[1] < 0 or next_step[1] >= len(grid) or \
-               next_step[2] < 0 or next_step[2] >= len(grid[0]):
-                continue
-            else:
-                if [next_step[1], next_step[2]] in visited:
-                    continue
-                elif grid[next_step[1]][next_step[2]] == 1:
-                    # Occupied
-                    continue
-                elif next_step[1] == goal[0] and next_step[2] == goal[1]:
-                    path = next_step
-                    return path
-                else:
-                    open_.append(next_step)
-
-    return 'fail'
-
-
-if __name__ == '__main__':
+    while not position_equal(current, goal):
+        open_.
     
-    print search(grid, init, goal, cost)
+if __name__ == '__main__':
+
+    m = search(grid, init, goal, cost)
+    for row in m:
+        print row
