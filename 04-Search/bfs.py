@@ -16,6 +16,7 @@
 #   1 = Occupied space
 from collections import deque
 
+
 grid = [[0, 0, 1, 0, 0, 0],
         [0, 1, 1, 0, 1, 0],
         [0, 0, 1, 0, 1, 0],
@@ -79,6 +80,7 @@ def search(grid, init, goal, cost):
     # set this flag true if goal is not found and there are no further
     # options to expand
     giveup = False
+
     while not found and not giveup:
         # Resort the list of nodes
         open_ = deque(sorted(open_, key=lambda x: x[2]))
@@ -104,8 +106,6 @@ def search(grid, init, goal, cost):
 
     if giveup:
         return 'fail'
-    else:
-        return [x, y, g]
 
 
 def main():
