@@ -17,14 +17,13 @@
 from collections import deque
 
 grid = [[0, 0, 1, 0, 0, 0],
-        [0, 0, 1, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0],
-        [0, 0, 1, 1, 1, 0],
+        [0, 1, 1, 0, 1, 0],
+        [0, 0, 1, 0, 1, 0],
+        [0, 1, 1, 0, 1, 0],
         [0, 0, 0, 0, 1, 0]]
 init = [0, 0]
 goal = [len(grid)-1, len(grid[0])-1]
 cost = 1
-
 delta = [[-1, 0], # go up
          [ 0,-1], # go left
          [ 1, 0], # go down
@@ -32,37 +31,81 @@ delta = [[-1, 0], # go up
 
 delta_name = ['^', '<', 'v', '>']
 
+
+def in_grid(grid, pos):
+    i = pos[0]
+    j = pos[1]
+    if i < 0 or j < 0:
+        return False
+    if i >= len(grid) or j >= len(grid[0]):
+        return False
+    return True
+
+
+def apply_move(pos, move):
+    return [pos[0] + move[0],
+            pos[1] + move[1]]
+
+
+def position_equal(pos1, pos2):
+    if pos1[0] != pos2[0] or pos1[1] != pos2[1]:
+        return False
+    else:
+        return True
+
+
+def is_occupied(grid, pos):
+    return grid[pos[0]][pos[1]]
+
+
+def is_visited(grid, pos):
+    return is_occupied(grid, pos)
+
+
 def search(grid, init, goal, cost):
 
-    open_ = deque([[0, 0, 0],])
-    visited = []
+    # Shadow copy of grid
+    closed = [[0 for row in range(len(grid[0]))] for col in range(len(grid))]
+    closed[init[0]][init[1]] = 1
 
-    max_y = len(grid)
-    max_x = len(grid[0])
+    x = init[0]
+    y = init[1]
+    g = 0
 
-    while len(open_) > 0:
-
-        active = open_.pop()
-        visited.append([active[1], active[2]])
-
+    open_ = deque([[x, y, g], ])
+    # Algorithm
+    # set this flag true if goal is found
+    found = False
+    # set this flag true if goal is not found and there are no further
+    # options to expand
+    giveup = False
+    while not found and not giveup:
+        # Resort the list of nodes
+        open_ = deque(sorted(open_, key=lambda x: x[2]))
+        try:
+            current = open_.popleft()
+            x = current[0]
+            y = current[1]
+            g = current[2]
+            print 'Current: {current}'.format(current=current)
+        except:
+            giveup = True
+            break
         for move in delta:
-            next_step = [active[0] + 1, active[1] + move[0], active[2] + move[1]]
-            if next_step[1] < 0 or next_step[1] >= len(grid) or \
-               next_step[2] < 0 or next_step[2] >= len(grid[0]):
-                continue
-            else:
-                if [next_step[1], next_step[2]] in visited:
-                    continue
-                elif grid[next_step[1]][next_step[2]] == 1:
-                    # Occupied
-                    continue
-                elif next_step[1] == goal[0] and next_step[2] == goal[1]:
-                    path = next_step
-                    return path
-                else:
-                    open_.append(next_step)
+            neighbor = apply_move([x, y], move)
+            if position_equal(neighbor, goal):
+                found = True
+                return [neighbor[0], neighbor[1], g+1]
+            if in_grid(grid, neighbor) and \
+               not is_visited(closed, neighbor) and \
+               not is_occupied(grid, neighbor):
+                open_.append([neighbor[0], neighbor[1], g+1])
+                closed[neighbor[0]][neighbor[1]] = 1
 
-    return 'fail'
+    if giveup:
+        return 'fail'
+    else:
+        return [x, y, g]
 
 
 def main():
