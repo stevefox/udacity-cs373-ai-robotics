@@ -65,6 +65,10 @@ def is_visited(grid, pos):
 
 def search(grid, init, goal, cost):
 
+    # Trivial case
+    if init[0] == goal[0] and init[1] == goal[1]:
+        return [goal[0], goal[0], 0]
+
     # Shadow copy of grid
     closed = [[0 for row in range(len(grid[0]))] for col in range(len(grid))]
     closed[init[0]][init[1]] = 1
