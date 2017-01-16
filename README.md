@@ -8,4 +8,4 @@ Key technologies implemented in this course are:
 
 3. Particle Filters: Particle filters are a multi-modal technique for estimating a continuously valued variable. It is one of the most powerful observer algorithms and is incredibly simple to implement. Professor Thrun attributes this to his tenure at Stanford.
 
-4. Search: Find a path from point A to point B. We would like this to be optimal in some sense. In this course, we implement Breadth-first-search for a 2D grid, as well as A* Search.
+4. Search: Find a path from point A to point B. We would like this to be optimal in some sense. In this course, we implement Breadth-first-search for a 2D grid. We then modify it to use a heuristic (in this case, L1 distance between grid location and the goal). Professor Thrun points out in the lecture that the heuristic used in his self-driving cars use the Euclidean Distance as the heuristic, which is the L2 distance.
