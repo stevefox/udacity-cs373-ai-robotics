@@ -136,6 +136,27 @@ def compute_shortest_path(grid, goal):
     return value_matrix
 
 
+def delta_table(grid):
+    """This could get unwieldy"""
+    dt = [[0 for i in range(len(grid[0]))] for j in range(len(grid))]
+    
+    for j in range(len(dt)):
+        for i in range(len(dt[0])):
+            # Check neighbors. Pick the first lower cost neighbor
+            # 99 is a magic mystery constant...indicating the presence
+            # of an obstacle
+            if grid[j][i] >= 99:
+                dt[j][i] = ' '
+                continue
+            for idx, move in enumerate(delta):
+                neighbor = apply_move(move, [j, i])
+                if in_grid(grid, neighbor):
+                    if grid[neighbor[0]][neighbor[1]] < grid[j][i]:
+                        dt[j][i] = delta_name[idx]
+                        break
+    return dt
+
+
 def search(grid, init, goal, cost):
 
     def h(x, y):
@@ -177,7 +198,6 @@ def search(grid, init, goal, cost):
             f = current[5]
             step_count += 1
             expansion_grid[x][y] = step_count
-            print 'Current: {current}'.format(current=[current[0], current[1]])
         except:
             giveup = True
             break
@@ -209,8 +229,6 @@ def search(grid, init, goal, cost):
     if giveup:
         return 'fail'
     if found:
-        for row in expansion_grid:
-            print row
         path = get_path(found_goal)
         return [x, y, g, f], path
 
@@ -219,7 +237,9 @@ def main():
     value_matrix = compute_shortest_path(grid, goal)
     for row in value_matrix:
         print row
-
+    dt = delta_table(value_matrix)
+    for row in dt:
+        print row
     shortest_path, path = search(grid, init, goal, cost)
     print 'Path: %s' % (path)
     for node in path:
