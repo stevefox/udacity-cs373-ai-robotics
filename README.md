@@ -1,4 +1,4 @@
-These are my original solutions to Udacity CS373 Artificial Intelligence for Robotics. I try to implement some unit tests as well to demonstrate the correctness of the algorithms. Proving that these algorithms are safe (not just correctly implemented in software) is not always trivial, and I would recommend consulting a Control Systems expert in the field to understand the challenges and implications for self-driving cards.
+These are my original solutions to Udacity CS373 Artificial Intelligence for Robotics. I try to implement some unit tests as well to demonstrate the correctness of the algorithms. Proving that these algorithms are safe (not just correctly implemented in software) is not always trivial, and I would recommend consulting a Control Systems expert in the field to understand the challenges and implications for self-driving cars.
 
 Key technologies implemented in this course are:
 
@@ -8,4 +8,5 @@ Key technologies implemented in this course are:
 
 3. Particle Filters: Particle filters are a multi-modal technique for estimating a continuously valued variable. It is one of the most powerful observer algorithms and is incredibly simple to implement. Professor Thrun attributes this to his tenure at Stanford.
 
-4. Search: Find a path from point A to point B. We would like this to be optimal in some sense. In this course, we implement Breadth-first-search for a 2D grid. We then modify it to use a heuristic (in this case, L1 distance between grid location and the goal). Professor Thrun points out in the lecture that the heuristic used in his self-driving cars use the Euclidean Distance as the heuristic, which is the L2 distance.
+4. Search: Find a path from point A to point B. We would like this to be optimal in some sense. In this course, we implement Breadth-first-search for a 2D grid. We then modify it to use a heuristic (in this case, L1 distance between grid location and the goal). Professor Thrun points out in the lecture that choosing a good heuristic for A* is a deep question. Another approach to path planning is Dynamic Programming, which computes a directional policy grid for every point in the map. The Dynamic Programming method (i.e., compute everything approach) requires a lot more computation.
+
