@@ -10,3 +10,6 @@ Key technologies implemented in this course are:
 
 4. Search: Find a path from point A to point B. We would like this to be optimal in some sense. In this course, we implement Breadth-first-search for a 2D grid. We then modify it to use a heuristic (in this case, L1 distance between grid location and the goal). Professor Thrun points out in the lecture that choosing a good heuristic for A* is a deep question. Another approach to path planning is Dynamic Programming, which computes a directional policy grid for every point in the map. The Dynamic Programming method (i.e., compute everything approach) requires a lot more computation.
 
+5. Control: In this section, we study the generation of smooth paths (i.e., from the discrete path search results) and motion control with PID controllers.
+
+6. SLAM
