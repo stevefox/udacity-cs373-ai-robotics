@@ -11,7 +11,7 @@ In this section, we study:
      - this constraint is for the original path
    - (y_i - y_{i+1)^2 -> min
      - constrains all y_i points to be as similar as possible
-     - interpoint distance
+     - minimize interpoint distance
 
    -> weight the second constraint with a weighting term, \alpha
    -> keep the endpoints fixed: apply optimization only to the intermediate points
