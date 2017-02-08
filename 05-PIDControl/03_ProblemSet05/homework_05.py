@@ -107,11 +107,11 @@ def smooth(path, weight_data = 0.1, weight_smooth = 0.1, tolerance = 0.00001):
             # For each coordinate/dimension
             for k in range(len(new_path[i])):
                 # i+1 -> skip the first coordinate
-                new_path[(i+1)%N][k] += \
-                    weight_data*(path[(i+1)%N][k] - new_path[(i+1)%N][k]) + \
-                    weight_smooth*(new_path[i%N][k] +
-                                   new_path[(i+2)%N][k] -
-                                   2.0*new_path[(i+1)%N][k])
+                new_path[(i)%N][k] += \
+                    weight_data*(path[(i)%N][k] - new_path[(i)%N][k]) + \
+                    weight_smooth*(new_path[(i-1)%N][k] +
+                                   new_path[(i+1)%N][k] -
+                                   2.0*new_path[(i)%N][k])
             # Optionally store each step of the path for debugging
             if keep_history:
                 history.append(copy.deepcopy(new_path))
