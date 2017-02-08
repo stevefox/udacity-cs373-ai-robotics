@@ -29,6 +29,7 @@
 from math import *
 import copy
 import math
+import matplotlib.pyplot as plt
 
 
 # Do not modify path inside your function.
@@ -123,6 +124,27 @@ def smooth(path, weight_data = 0.1, weight_smooth = 0.1, tolerance = 0.00001):
 #newpath = smooth(path)
 #for i in range(len(path)):
 #    print '['+ ', '.join('%.3f'%x for x in path[i]) +'] -> ['+ ', '.join('%.3f'%x for x in newpath[i]) +']'
+
+def plot_path(plt, path):
+    """Plot path onto plot"""
+
+    x = [i[0] for i in path]
+    y = [i[1] for i in path]
+
+    plt.plot(x, y, linewidth=2.0)
+
+    return plt
+
+
+def plot_paths(original_path, smoothed_path, filename='test.png', show=False):
+    plt.axis([-1, 10, -1, 10])
+
+    plot_path(plt, original_path)
+    plot_path(plt, smoothed_path)
+
+    plt.savefig(filename)
+    plt.clf()
+
 
 
 ##### TESTING ######
@@ -235,5 +257,18 @@ answer2 = [[1.2222234770374059, 0.4444422843711052],
            [0.44444210978390364, 1.2222211690821811],
            [0.8888882042812255, 0.8888870211766268]]
 
-solution_check(smooth(testpath1), answer1)
-solution_check(smooth(testpath2), answer2)
+
+def run_testcase(testpath, answer, casename):
+    solution_check(smooth(testpath), answer)
+    output = '%s.png' % (casename)
+    plot_paths(testpath, smooth(testpath), filename=output)
+
+
+def main():
+    """Run the test cases from the course"""
+    run_testcase(testpath1, answer1, 'cyclic-smoothing-testpath1')
+    run_testcase(testpath2, answer2, 'cyclic-smoothing-testpath2')
+
+
+if __name__ == '__main__':
+    main()
