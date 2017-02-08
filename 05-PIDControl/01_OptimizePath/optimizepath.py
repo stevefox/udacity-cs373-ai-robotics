@@ -56,6 +56,7 @@ def smooth(path, weight_data=0.5, weight_smooth=0.1, tolerance=0.0001, keep_hist
     while error > tolerance:
         last_path = copy_path(new_path)
         # For each step in the path
+        # Leave out beginning and ending points by slicing [1:-1]
         for i, j in enumerate(new_path[1:-1]):
             # For each coordinate/dimension
             for k in range(len(new_path[i+1])):
@@ -84,7 +85,7 @@ def plot_path(plt, path):
 
 
 if __name__ == '__main__':
-    new_path, history = smooth(path, weight_data=0.0)
+    new_path, history = smooth(path)
     print 'iterations: %s' % (len(history))
     print new_path[1:-1]
     plt.axis([-1, 5, -1, 5])
